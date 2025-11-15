@@ -1,2 +1,5 @@
 soundfile
 sounddevice
+numpy
+librosa
+matplotlib
