@@ -1,4 +1,4 @@
-import utils.procesamiento as prc
+import utils_audio.procesamiento as prc
 import matplotlib.pyplot as plt
 import numpy as np
 

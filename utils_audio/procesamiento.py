@@ -25,9 +25,12 @@ def get_samplerate(T:float, N:float) -> float:
     """
     return 5*(1/T)*N
 
-def frecuencias_dominantes(data: np.ndarray, sr: int):
-    frame_length = 3600
-    hop_length = 256
+def dominant_frequencies(data: np.ndarray, sr: int):
+    """
+    This function returns the most energetic frequency value each 0.5 seconds frame.
+    """
+    frame_length = sr//2
+    hop_length = sr//4
     fmin = 27
     fmax = 4400
 
@@ -45,7 +48,7 @@ def frecuencias_dominantes(data: np.ndarray, sr: int):
      # Voicing threshold: energy-based mask
     rms = librosa.feature.rms(y=data, frame_length=frame_length,
                               hop_length=hop_length, center=True)[0]
-    thresh = np.percentile(rms, 10)
+    thresh = np.percentile(rms, 80)
     voiced = rms > thresh               # boolean mask
 
     f0_voiced = f0.copy()
@@ -60,7 +63,7 @@ def frecuencias_dominantes(data: np.ndarray, sr: int):
     return f0_voiced, times
 
 def audio_to_notes(data, sr):
-    f0, times = frecuencias_dominantes(data, sr)
+    f0, times = dominant_frequencies(data, sr)
     notes = f0_to_notes(f0, times)
     segments = group_notes(notes)
     return segments
