@@ -1,6 +1,9 @@
 import soundfile as sf
 import sounddevice as sd
 import numpy as np
+import codificacion.procesamiento as pr
+from utils_audio import analisis_notas as an
+import config
 
 def leer_audio(path):
     """
@@ -16,11 +19,14 @@ def leer_audio(path):
 
 
 
-def capturar_audio():
+def construir_audio(mensaje, sr=48000):
     """
-    Esta función detecta el audio en vivo.
+    Esta función toma un mensaje, lo codifica y construye un .wav
     """
-    pass
+    notas = pr.codificar(mensaje)
+
+    audio = np.concatenate([an.notes_to_wave(n, duration=config.FRAME_LENGTH, sr=sr) for n in notas])
+    sf.write("output.wav", audio, sr)
 
 def reproducir_audio(data, sr):
     sd.play(data, sr)
