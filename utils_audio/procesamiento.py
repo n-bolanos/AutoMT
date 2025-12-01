@@ -1,9 +1,10 @@
-from numpy.fft import fft, fftfreq
+from numpy.fft import fft
 from numpy import ndarray
 import librosa
 import numpy as np
+import config
 
-from .analisis_notas import f0_to_notes, group_notes
+from .analisis_notas import f0_to_notes
 
 def get_amplitudes(series:ndarray) -> ndarray:
     """
@@ -11,11 +12,11 @@ def get_amplitudes(series:ndarray) -> ndarray:
     """
     return abs(fft(series)[:len(series)//2])/(len(series)//2)
 
-def get_frequencies(size:int, samplerate:float) -> ndarray:
+def get_frequencies(window_size:int, samplerate:float) -> ndarray:
     """
     This function returns the array of frequencies according to the current analysis
     """
-    return fftfreq(size, 1/samplerate)[:size//2]
+    return librosa.fft_frequencies(sr=samplerate, n_fft=window_size)
 
 def get_samplerate(T:float, N:float) -> float:
     """
@@ -29,41 +30,25 @@ def dominant_frequencies(data: np.ndarray, sr: int):
     """
     This function returns the most energetic frequency value each 0.5 seconds frame.
     """
-    frame_length = sr//2
-    hop_length = sr//4
-    fmin = 27
-    fmax = 4400
+    n_samples = int(sr*config.FRAME_LENGTH)
+    f0_list = []
 
-    data = librosa.util.normalize(data.astype(float))
+    for i in range(0, len(data)+1, n_samples):
+        segment = data[i:i+n_samples]
+        if len(segment) == 0:
+            continue
 
-    f0 = librosa.yin(
-        data,
-        fmin=fmin,
-        fmax=fmax,
-        sr=sr,
-        frame_length=frame_length,
-        hop_length=hop_length
-    )
+        S = np.abs(librosa.stft(segment, n_fft=4096, hop_length=2048, center=False))
 
-     # Voicing threshold: energy-based mask
-    rms = librosa.feature.rms(y=data, frame_length=frame_length,
-                              hop_length=hop_length, center=True)[0]
-    thresh = np.percentile(rms, 80)
-    voiced = rms > thresh               # boolean mask
+        freqs = get_frequencies(4096, sr)
+        mag = np.mean(S, axis=1)
 
-    f0_voiced = f0.copy()
-    f0_voiced[~voiced] = np.nan
+        idx = np.argmax(mag)
+        f0_list.append(freqs[idx])
 
-    times = librosa.frames_to_time(
-        np.arange(len(f0)),
-        sr=sr,
-        hop_length=hop_length,
-    )
-
-    return f0_voiced, times
+    return f0_list
 
 def audio_to_notes(data, sr):
-    f0, times = dominant_frequencies(data, sr)
-    notes = f0_to_notes(f0, times)
-    segments = group_notes(notes)
-    return segments
+    f0 = dominant_frequencies(data, sr)
+    notes = f0_to_notes(f0)
+    return notes

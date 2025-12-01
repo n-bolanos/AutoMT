@@ -1,0 +1,1 @@
+FRAME_LENGTH = 0.25
