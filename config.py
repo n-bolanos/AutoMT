@@ -82,4 +82,4 @@ BUTTON_RADIUS = 15
 TITLE_FONT_PARAMS = dict(family="Aptos", size=60, weight="bold", slant="italic", underline=True)
 FONT_PARAMS = dict(family="Aptos", size=20)
 BUTTON_FONT_PARAMS = dict(family="Aptos", size=20, weight="bold")
-
+INFO_FONT_PARAMS = dict(family="Aptos", size=12, weight="bold")
