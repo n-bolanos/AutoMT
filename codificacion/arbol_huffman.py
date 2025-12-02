@@ -11,10 +11,11 @@ def generate_codes(node, codes, prefix=""):
 
 def mapear_codigo_nota(codes):
     note_sequence = [
-        "C3","E3","G3","B3","D4","F4","A4","C5","E5","G5",
-        "B5","D6","F6","A6","C7","E7","G7","B7","D8","F8",
-        "A8","C9","E9","G9","B9","D10","F10","A10","C11","E11"
-    ]
+    "C4","D4","E4","F4","G4","A4","B4",
+    "C5","D5","E5","F5","G5","A5","B5",
+    "C6","D6","E6","F6","G6","A6","B6",
+    "C7","D7","E7","F7","G7","A7","B7",
+    "C8","D8"]
 
     # Map each symbol to a note
     letters = list(codes.keys())
@@ -29,7 +30,7 @@ def construir_codigo():
     # Input frequencies (percentages given by CVC)
     data = [
         ("E", 13.19), ("A", 12.85), ("O", 9.47), ("S", 7.56),
-        ("N", 6.97), ("I", 6.7), ("R", 6.49), ("L", 4.94),
+        ("N", 6.97), ("I", 6.7), ("R", 5.49), ("L", 4.94),
         ("D", 4.9), ("U", 4.34), ("T", 4.3), ("C", 4.14),
         ("M", 2.87), ("P", 2.47), ("B", 1.47), ("G", 1.08),
         ("Q", 1.07), ("V", 1.01), ("Y", 0.9), ("F", 0.67),

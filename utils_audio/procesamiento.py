@@ -32,15 +32,16 @@ def dominant_frequencies(data: np.ndarray, sr: int):
     """
     n_samples = int(sr*config.FRAME_LENGTH)
     f0_list = []
+    w_size = int(min(4096, n_samples//2))
 
     for i in range(0, len(data)+1, n_samples):
         segment = data[i:i+n_samples]
         if len(segment) == 0:
             continue
 
-        S = np.abs(librosa.stft(segment, n_fft=4096, hop_length=2048, center=False))
+        S = np.abs(librosa.stft(segment, n_fft=w_size, hop_length=int(w_size/2), center=False))
 
-        freqs = get_frequencies(4096, sr)
+        freqs = get_frequencies(w_size, sr)
         mag = np.mean(S, axis=1)
 
         idx = np.argmax(mag)
